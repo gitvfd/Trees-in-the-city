@@ -50,7 +50,15 @@
 		        pointer-events: none;
           		fill: black;
         }
+  
 
+		.legend {
+			font-family: sans-serif;
+		    font-size: 11px;
+		    fill:rgb(116,116,116);
+		    text-rendering:optimizeLegibility;
+        }     
+       	
 		.x.axis path {
 		  display: none;
 		}
@@ -85,18 +93,18 @@
 		#selectedYear{
 			margin: 0px 20px;
 			font: bold italic 20px "Helvetica", sans-serif;
-			color: #82c363;  
+			color: #96D496;  
 		}
 
 		#selectedSpecies{
 			font: bold italic 14px "Helvetica", sans-serif;
-			color: #82c363;  
+			color: #96D496;  
 
 		}
 
 		#treePicture{
 			width: 255px;
-		}
+		} 
 
   	</style>
 <head>
@@ -169,7 +177,7 @@
 	      	.attr("width", xScale.rangeBand)
 	      	.attr("y", yMap)
 	      	.attr("height", function(d) { return heightbar - margin - yScale(yValue(d)); })
-	      	.style("fill","#82c363")
+	      	.style("fill","#96D496")
 	      	.style("opacity",0.90);
 
 		svgBar.selectAll("rect")
@@ -204,7 +212,7 @@
 		svgBar.selectAll("rect")
 			.on("mouseout", function(d) {
 				d3.select(this)
-	      			.style("fill","#82c363")
+	      			.style("fill","#96D496")
 	      			.style("opacity",0.90)
 
 		      	d3.select("#tooltip").classed("hidden", true);
@@ -224,6 +232,25 @@
 	var svg = d3.select(area2).append("svg")
 	    .attr("width", widthMap)
 	    .attr("height", height);
+
+	var circle= svg.selectAll("circle")
+					.data([[1,"#82c363","Tree"],[3,"#de59bc","Year"],[3,"#ff6c47","Species"],[3,"#2bb2d4","year+species"]])
+					.enter()
+					.append("circle")
+					.attr("cx", 20)
+					.attr("cy",function(d, i) { return i * 20 + 30; })
+					.attr("r",function(d) { return d[0]; })
+					.style("fill",function(d) { return d[1]; });
+	
+	var legend =	svg.selectAll("text")
+					.data([[1,"#82c363","Tree"],[3,"#de59bc","Year"],[3,"#ff6c47","Species"],[3,"#2bb2d4","Year+species"]])
+					.enter()			
+					.append("text")
+					.attr("class","legend")
+					.attr("x",30)
+					.attr("y",function(d, i) { return i * 20 + 35; })
+					.text(function(d) { return d[2];});
+
 
 	var g = svg.append("g");
 
@@ -259,17 +286,11 @@
 				showSpecies(essence.get(this.value));
 			});
 
-		var minYear = d3.min(data.map(function(d) {return (d.anne_plant);} ));
-		var maxYear = d3.max(data.map(function(d) {return (d.anne_plant);} ));
 
-		var color = d3.scale.linear().domain([minYear,maxYear]).range(["#1e5c00","#82c363"]);
-
-		var trees=g.selectAll("a.node")
+		var trees= g.selectAll("circle") 
 			.data(data)
-	        .enter().append("a")
-	        .attr("class","nodes");
-
-		trees.append("circle") 
+			.enter()
+			.append("circle")
 		    .attr("cx", function(d) {
 		      return projection([d.lon,d.lat])[0];
 		    })
@@ -278,110 +299,115 @@
 		    })
 		    .transition().duration(0)
 		    .attr("r",1)
-		    .style("fill","#82c363")
-		    .style("opacity",0.2);
+		    //.attr("stroke-width",0)
+		    .style("fill","#96D496")
+		    .style("opacity",0.15);
 	});
 
 
 	function showTreeYear(year){
-			
-		d3.selectAll("circle")
-			.transition().duration(2000)
-			.attr("r",function(d){
-		    	if(d.essence==document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value){
-		    		return 3;
-		    	}
-		    	else{
-		    		return 1;
-		    	};
-		    })
-
-	        //.style("stroke-width",2)
-	        .style("stroke",function(d){
-		    	if(d.essence==document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value){
-		    		return "purple";
-		    	}
-		    	else{
-		    		return "#82c363";
-		    	};
-		    })
-	        //.style("stroke-width",0)
-		    .style("opacity",0.2);
-
-		//d3.tsv("data/Tree_of_paris.tsv", function(error,data){
-		
 		queue()
-	    	.defer(d3.tsv, "data/Tree_of_paris.tsv") 
-	    	.await(drawYearCircle);
+		    .defer(d3.tsv, "data/Tree_of_paris.tsv") 
+		    .await(drawYearCircle);		
 
-	    function drawYearCircle(error,Tree_of_paris){
+
+		function drawYearCircle(error,Tree_of_paris){
 			data=Tree_of_paris.filter(function(d) {
-			return(d.anne_plant== year)});
-			
-			d3.selectAll("circle")
-				.data(data)
+			return(d.anne_plant == year)});
+				
+
+			g.selectAll("circle")
+				.data(Tree_of_paris)
+				.transition().duration(500)
+			    .attr("r",1)
+		        .style("fill", "#96D496")
+			    .style("opacity",.15)
 				.transition().duration(2000)
 			    .attr("r",function(d){
-			    	if(d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value){
-			    		return 3;
-			    	}
-			    	else{
-			    		return 1;
-			    	};
+				    	if(d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value || d.anne_plant== year){
+				    		return 3;
+				    	}
+				    	else{
+				    		return 1;
+				    	};
+				})	
+				.style("fill",function(d){
+				    	if(d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value && d.anne_plant== year){
+				    		return "#2BB2D4";
+				    	}
+				    	else if (!(d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value) && d.anne_plant== year){
+				    		return"#de59bc";
+				    	}
+				    	else if (d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value && !(d.anne_plant== year)){
+				    		return "#ff6c47";
+				    	}
+				    	else{
+				    		return "#96D496";
+				    	};
 			    })
-			    .attr("fill",function(d){
-			    	if(d.essence === document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value){
-			    		return "purple";
-			    	}
-			    	else{
-			    		return "#82c363";
-			    	};
-			    })
-	            .style("stroke-width",2)
-	            .style("stroke", "red")
-	            .style("opacity",0.7);
+	            .style("opacity",function(d){
+				    	if(d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value || d.anne_plant== year){
+				    		return 0.5;
+				    	}
+				    	else{
+				    		return 0.15;
+				    	};
+				});
 		};
 	};
 
 
 	function showSpecies(name){
 
-		d3.selectAll("circle")
-			.transition().duration(2000)
-		    .attr("r",1)
-	        .style("fill", "#82c363")
-		    .style("opacity",0.2);
-
-		//d3.tsv("data/Tree_of_paris.tsv", function(error,data){
-		
 		queue()
 	    	.defer(d3.tsv, "data/Tree_of_paris.tsv") 
 	    	.await(drawSpeciesCircle);
+
 
 	    function drawSpeciesCircle(error,Tree_of_paris){
 			data=Tree_of_paris.filter(function(d) {
 			return(d.essence == name)});
 
-			d3.selectAll("circle")
-				.data(data)
-				.transition().duration(2000)
-			    //.transition()
-			    //.attr("r",6)
-		        //.style("fill", "purple")
-		    	//.style("opacity",0.9)
-			    //.transition().duration(3500)
-			    .attr("r",3)
-		        .style("fill", "purple")
-	            .style("stroke-width",2)
-	            .style("stroke", function(d){
-			    	if(d.anne_plant === document.getElementById("selectedYear").innerHTML){
-			    		return "red";
-			    	}
-			    	else{
-			    		return "purple";
-			    	}
-			    })
-		    	.style("opacity",0.7);
+			g.selectAll("circle")
+				.data(Tree_of_paris)
+				.transition().duration(500)
+			    .attr("r",1)
+		        .style("fill", "#96D496")
+			    .style("opacity",.15)
+				.transition()
+				.duration(2000)
+				.attr("r",function(d){
+				    	if(d.essence == name || d.anne_plant === document.getElementById("selectedYear").innerHTML){
+				    		return 3;
+				    	}
+				    	else{
+				    		return 1;
+				    	};
+				})
+				.style("fill", function(d){
+				    	if(d.essence == name && d.anne_plant == document.getElementById("selectedYear").innerHTML){
+				    		return "#2BB2D4";
+				    	}
+				    	else if (!(d.essence == name) && d.anne_plant == document.getElementById("selectedYear").innerHTML){
+				    		return"#de59bc";
+				    	}
+				    	else if (d.essence == name && !(d.anne_plant == document.getElementById("selectedYear").innerHTML)){
+				    		return "#ff6c47";
+				    	}
+				    	else {
+							return "#96D496"
+				    	};
+				})
+		    	.style("opacity",function(d){
+				    	if(d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value || d.anne_plant== year){
+				    		return 0.5;
+				    	}
+				    	else{
+				    		return 0.15;
+				    	};
+				});
+
+
 		};
 
 		var fileName = name.replace(/ /g, "_");
@@ -396,7 +422,7 @@
 	function resetTree(){
 			d3.selectAll("circle")
 			    .attr("r",1)
-		        .style("fill", "#82c363");		
+		        .style("fill", "#96D496");		
 	};
 </script>
 </body>
