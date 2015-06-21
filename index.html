@@ -93,6 +93,26 @@
 		  display: none;
 		}
 
+		#tooltipTree {
+		  position: absolute;
+		  width: auto;
+		  height: auto;
+		  padding: 2px;
+     	  border : 1px outset rgb(225,225,225);
+		  background-color: #fff;
+		  /-webkit-border-radius: 2px;
+		  -moz-border-radius: 2px;
+		  border-radius: 2px;
+		  -webkit-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+		  -moz-box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+		  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+		  pointer-events: none;
+		}
+
+		#tooltipTree.hidden {
+		  display: none;
+		}
+
 		#selectedYear{
 			margin: 0px 20px;
 			font: bold italic 20px "Helvetica", sans-serif;
@@ -116,6 +136,9 @@
 <body>
 <div id="tooltip" class="hidden">
 		Arbres plantés: <strong id="numberTrees">1</strong> en <i id="year">XXX</i>
+</div>
+<div id="tooltipTree" class="hidden">
+		<strong id="TreeSpecies">1</strong> en <i id="yearTree">XXX</i>
 </div>
 <h1>Trees in the city</h1>
 <div class="intro" >Où, quand et quelles espèces d'arbres parmi plus de 140 ont été plantées à Paris au cours des quatre derniers siècles? Visualisez le en un clin d'oeil !<br> Sur les 200 000 arbres recensés par la mairie de Paris, nous disposons de ces informations pour environ 50 000 d'entre eux et présentons les informations pour 7500 d'entre eux.</div>
@@ -322,6 +345,71 @@
 		    //.attr("stroke-width",0)
 		    .style("fill","#96D496")
 		    .style("opacity",0.25);
+
+		g.selectAll("circle")
+			.on("mouseover", function(d) {
+				d3.select(this)
+				.attr("r",6)
+				.style("opacity",0.9);
+
+
+	      		//Get this bar's x/y values, then augment for the tooltip
+	      		var xPosition = parseFloat(d3.select(this).attr("cx")) +document.getElementById("area2").offsetLeft +10 ;
+	      		var yPosition = parseFloat(d3.select(this).attr("cy")) +document.getElementById("area2").offsetTop;
+
+				d3.select("#tooltipTree")
+			        .style("left", xPosition + "px")
+			        .style("top", yPosition + "px") 
+			        .select("#TreeSpecies")
+			        .text(function(){return d.essence});
+
+				d3.select("#tooltipTree")
+			        .select("#yearTree")
+			        .text(function(){return d.anne_plant});
+
+		      	//Show the tooltip
+		      	d3.select("#tooltipTree").classed("hidden", false);
+			})
+								
+
+		g.selectAll("circle")
+			.on("mouseout", function(d) {
+				d3.select(this)
+	      			.attr("r",function(d) { 
+							if(d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value || d.anne_plant== document.getElementById("selectedYear").innerHTML){
+				    		return 3;
+				    	}
+				    	else{
+				    		return 1;
+				    	};
+	      			})				
+	      			.style("fill",function(d) { 
+				    	if(d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value && d.anne_plant== document.getElementById("selectedYear").innerHTML){
+				    		return "#2BB2D4";
+				    	}
+				    	else if (!(d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value) && d.anne_plant== document.getElementById("selectedYear").innerHTML){
+				    		return"#de59bc";
+				    	}
+				    	else if (d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value && !(d.anne_plant== document.getElementById("selectedYear").innerHTML)){
+				    		return "#ff6c47";
+				    	}
+				    	else{
+				    		return "#96D496";
+				    	};
+	      			 })
+	      			.style("opacity",function(d) { 
+							if(d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value || d.anne_plant== document.getElementById("selectedYear").innerHTML){
+				    		return 0.75;
+				    	}
+				    	else{
+				    		return 0.25;
+				    	};
+	      			})
+
+		      	d3.select("#tooltipTree").classed("hidden", true);
+			});	
+
+
 	});
 
 
@@ -367,7 +455,7 @@
 			    })
 	            .style("opacity",function(d){
 				    	if(d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value || d.anne_plant== year){
-				    		return 0.6;
+				    		return 0.75;
 				    	}
 				    	else{
 				    		return 0.25;
@@ -420,7 +508,7 @@
 				})
 		    	.style("opacity",function(d){
 				    	if(d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value || d.anne_plant== year){
-				    		return 0.6;
+				    		return 0.75;
 				    	}
 				    	else{
 				    		return 0.25;
