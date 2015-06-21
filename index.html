@@ -93,12 +93,14 @@
 		#selectedYear{
 			margin: 0px 20px;
 			font: bold italic 20px "Helvetica", sans-serif;
-			color: #96D496;  
+			color: #555;
+			opacity: 0.85; 
 		}
 
 		#selectedSpecies{
 			font: bold italic 14px "Helvetica", sans-serif;
-			color: #96D496;  
+			color: #555; 
+			opacity: 0.85;   
 
 		}
 
@@ -183,8 +185,8 @@
 		svgBar.selectAll("rect")
 			.on("mouseover", function(d) {
 				d3.select(this)
-				.style("fill","red")
-				.style("opacity",0.85);
+				//.style("fill","#de59bc")
+				.style("opacity",0.45);
 
 
 	      		//Get this bar's x/y values, then augment for the tooltip
@@ -206,13 +208,27 @@
 			})
 			.on("click",function(d) {
 				document.getElementById("selectedYear").innerHTML =d.year;
+
+				d3.selectAll(".bar")
+	      			.style("fill","#96D496")
+	      			.style("opacity",0.90)
+
+				d3.select(this)
+	      			.style("fill","#de59bc")
+	      			.style("opacity",0.90)
+
 				showTreeYear(d.year);
 			});							
 
 		svgBar.selectAll("rect")
 			.on("mouseout", function(d) {
 				d3.select(this)
-	      			.style("fill","#96D496")
+	      			.style("fill",function(d) { 
+	      				if (d.year === document.getElementById("selectedYear").innerHTML)
+	      					return "#de59bc";
+	      				else 
+	      					return "#96D496";
+	      			 })
 	      			.style("opacity",0.90)
 
 		      	d3.select("#tooltip").classed("hidden", true);
@@ -234,7 +250,7 @@
 	    .attr("height", height);
 
 	var circle= svg.selectAll("circle")
-					.data([[1,"#82c363","Tree"],[3,"#de59bc","Year"],[3,"#ff6c47","Species"],[3,"#2bb2d4","year+species"]])
+					.data([[1,"#82c363","Arbre"],[3,"#de59bc","Année"],[3,"#ff6c47","Espèce"],[3,"#2bb2d4","Année+Espèce"]])
 					.enter()
 					.append("circle")
 					.attr("cx", 20)
@@ -243,7 +259,7 @@
 					.style("fill",function(d) { return d[1]; });
 	
 	var legend =	svg.selectAll("text")
-					.data([[1,"#82c363","Tree"],[3,"#de59bc","Year"],[3,"#ff6c47","Species"],[3,"#2bb2d4","Year+species"]])
+					.data([[1,"#96D496","Tree"],[3,"#de59bc","Year"],[3,"#ff6c47","Species"],[3,"#2bb2d4","Year+species"]])
 					.enter()			
 					.append("text")
 					.attr("class","legend")
