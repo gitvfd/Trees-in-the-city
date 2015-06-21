@@ -24,7 +24,7 @@
 			margin: 0px 20px;
 			font-size: 18px;
 		}
-
+		
 	  	.map {
 	  		float: left;
 	      	width: 900px;
@@ -118,13 +118,13 @@
 		Arbres plantés: <strong id="numberTrees">1</strong> en <i id="year">XXX</i>
 </div>
 <h1>Trees in the city</h1>
-<div class="intro" >Où, quand et quelles espèces d'arbres parmi plus de 140 ont été plantées à Paris au cours des quatre derniers siècles? Visualisez le en un clin d'oeil !<br> Sur les 200 000 arbres recensés par la mairie de Paris, nous disposons de ces informations pour environ 50 000 d'entre eux et présentons les informations pour 7500 d'entre eux.</div>
+<div class="intro" >Où, quand et quelles espèces d'arbres parmi plus de 140 ont été plantées à Paris au cours des quatre derniers siècles? Visualisez le en un clin d'oeil !<br> Sur les 200 000 arbres recensés par la mairie de Paris, nous disposons de ces informations pour environ 50 000 d'entre eux. </div>
 <br>
 <div id="area1"></div>
 <div id="selectedYear">Cliquez sur une barre pour voir les arbres plantées cette année là</div>
 <div class="row">
-	<div class="map" id="area2"></div>
-	<div class="menu"id="aside">
+<div class="map" id="area2"></div>
+<div class="menu"id="aside">
 	<div id="selectedSpecies">Localisez par espèce:</div><br>
 	<select id="dropdown"></select>
 	<br><p>
@@ -133,7 +133,7 @@
 </div>
 <br>
 <div>Données fournies par <a href="http://opendata.paris.fr" target="_blank">opendata.paris.fr</a></div>
-<div class="changePage" >Afin d'optimiser les performances, cette version ne comprend pas l'intégralité des données. Pour voir les données dans leur intégralité <a href="complete.html">cliquez ici</a> </div> 
+<div class="changePage" >Cette version comprend l'intégralité des données mais peut présenter des problèmes de performance. Pour voir la visualisation partielle <a href="index.html">cliquez ici</a> </div> 
 <script type="text/javascript">
 	var width = 1160,
 		widthMap = 900, 
@@ -147,7 +147,7 @@
 	    .attr("height", heightbar + margin + margin);
 
 
-	d3.tsv("data/time_line_short.tsv", function(error,data){
+	d3.tsv("data/time_line.tsv", function(error,data){
 
 		var xValue = function(d) { return d.year; }, 
 	    	xScale = d3.scale.ordinal().rangeRoundBands([0, width], .2), 
@@ -286,7 +286,7 @@
 	});
 
 
-	d3.tsv("data/Tree_of_paris_short.tsv", function(error,data){
+	d3.tsv("data/Tree_of_paris.tsv", function(error,data){
 
 		var essence = d3.map();
 	  	data.forEach(function(d) { essence.set(d.essence,d.essence); });
@@ -321,13 +321,13 @@
 		    .attr("r",1)
 		    //.attr("stroke-width",0)
 		    .style("fill","#96D496")
-		    .style("opacity",0.25);
+		    .style("opacity",0.15);
 	});
 
 
 	function showTreeYear(year){
 		queue()
-		    .defer(d3.tsv, "data/Tree_of_paris_short.tsv") 
+		    .defer(d3.tsv, "data/Tree_of_paris.tsv") 
 		    .await(drawYearCircle);		
 
 
@@ -341,7 +341,7 @@
 				.transition().duration(500)
 			    .attr("r",1)
 		        .style("fill", "#96D496")
-			    .style("opacity",.25)
+			    .style("opacity",.15)
 				.transition().duration(2000)
 			    .attr("r",function(d){
 				    	if(d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value || d.anne_plant== year){
@@ -367,10 +367,10 @@
 			    })
 	            .style("opacity",function(d){
 				    	if(d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value || d.anne_plant== year){
-				    		return 0.6;
+				    		return 0.5;
 				    	}
 				    	else{
-				    		return 0.25;
+				    		return 0.15;
 				    	};
 				});
 		};
@@ -380,7 +380,7 @@
 	function showSpecies(name){
 
 		queue()
-	    	.defer(d3.tsv, "data/Tree_of_paris_short.tsv") 
+	    	.defer(d3.tsv, "data/Tree_of_paris.tsv") 
 	    	.await(drawSpeciesCircle);
 
 
@@ -393,7 +393,7 @@
 				.transition().duration(500)
 			    .attr("r",1)
 		        .style("fill", "#96D496")
-			    .style("opacity",.25)
+			    .style("opacity",.15)
 				.transition()
 				.duration(2000)
 				.attr("r",function(d){
@@ -420,10 +420,10 @@
 				})
 		    	.style("opacity",function(d){
 				    	if(d.essence == document.getElementById("dropdown").options[document.getElementById("dropdown").selectedIndex].value || d.anne_plant== year){
-				    		return 0.6;
+				    		return 0.5;
 				    	}
 				    	else{
-				    		return 0.25;
+				    		return 0.15;
 				    	};
 				});
 
