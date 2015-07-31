@@ -5,6 +5,7 @@
   	<script src="http://d3js.org/d3.v3.js"></script>
   	<script src="http://d3js.org/queue.v1.min.js"></script>
 	<script src="http://d3js.org/topojson.v1.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   	<style>
 	  	body {  color: #555; background: #fff ; background:url(img/citylines.png);background-size:600px ;background-repeat:no-repeat;background-position:660px 0px; width : 1160px; margin-left: auto; margin-right: auto; font: normal 14px "Helvetica", sans-serif;  }
@@ -232,8 +233,8 @@
 
 		      	//Show the tooltip
 		      	d3.select("#tooltip").classed("hidden", false);
-			})
-			.on("click",function(d) {
+			});
+			/**.on("click",function(d) {
 				document.getElementById("selectedYear").innerHTML =d.year;
 
 				d3.selectAll(".bar")
@@ -245,7 +246,7 @@
 	      			.style("opacity",0.90)
 
 				showTreeYear(d.year);
-			});							
+			});	**/						
 
 		svgBar.selectAll("rect")
 			.on("mouseout", function(d) {
@@ -527,12 +528,50 @@
 	
 	showSpecies("Ailante");
 
-	function resetTree(){
+	/**function resetTree(){
 			d3.selectAll("circle")
 			    .attr("r",1)
 		        .style("fill", "#96D496");		
-	};
+	};**/
 
+	//Show all the cirkels again when clicked outside legend
+	
+	function resetClick(clickEvent) {	
+		
+		if($(clickEvent).is("rect")) {
+			svgBar.selectAll("rect")
+				.on("click",function(d) {
+					console.log("test1")
+					document.getElementById("selectedYear").innerHTML =d.year;
+
+					d3.selectAll(".bar")
+		      			.style("fill","#96D496")
+		      			.style("opacity",0.90)
+
+					d3.select(this)
+		      			.style("fill","#de59bc")
+		      			.style("opacity",0.90)
+
+					showTreeYear(d.year);
+			});
+		}else{
+
+					console.log("test2")
+			showTreeYear();
+
+			document.getElementById("selectedYear").innerHTML ="";
+
+					d3.selectAll(".bar")
+		      			.style("fill","#96D496")
+		      			.style("opacity",0.90)
+
+		}    
+	}//resetClick
+
+	$("body").click(function(e){
+	   var clickEvent=e.target; 
+	   resetClick(clickEvent)
+});
 </script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
